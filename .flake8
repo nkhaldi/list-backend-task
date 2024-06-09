@@ -1,0 +1,12 @@
+[flake8]
+exclude = venv,.venv,.tox,.git,*/migrations/*,tests
+color = always
+count = True
+indent-size = 4
+max-complexity = 20
+max-line-length = 120
+show_source = True
+docstring-convention = pep257
+
+# ingone some flake8 errors
+extend-ignore = W503
