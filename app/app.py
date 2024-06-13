@@ -1,7 +1,11 @@
 """App module."""
 
 from aiohttp import web
-from models_schema import api_db as db
+
+from app.api.routes import add_routes
+from app.config import Config
+from app.db import close_db, init_db
+from app.db.models import db
 
 app = web.Application()
 app["db"] = db
@@ -9,12 +13,6 @@ app["db"] = db
 
 def init_app() -> web.Application:
     """Init app."""
-    from app.api.routes import add_routes
-
-    from .cleanups import close_db
-    from .config import Config
-    from .startups import init_db
-
     app["config"] = Config
 
     # Startups

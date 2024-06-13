@@ -1,11 +1,20 @@
+"""API Tests."""
+
+import os
 import uuid
 from datetime import datetime
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SERVICE_URL = os.getenv("SERVICE_URL")
 
 
 def assert_balance(user, expected_balance, date=None):
-    url = f'http://localhost:8000/v1/user/{user["id"]}'
+    """Assert user balance."""
+    url = f'{SERVICE_URL}/v1/user/{user["id"]}'
     if date:
         url += f"?date={date}"
     balance_resp = requests.get(url)
@@ -14,7 +23,8 @@ def assert_balance(user, expected_balance, date=None):
 
 
 def test_api():
-    user_resp = requests.post("http://localhost:8000/v1/user", json={"name": "petya"})
+    """Test API."""
+    user_resp = requests.post(f"{SERVICE_URL}/v1/user", json={"name": "petya"})
 
     assert user_resp.status_code == 201
     user = user_resp.json()
@@ -30,11 +40,11 @@ def test_api():
         "user_id": user["id"],
         "timestamp": datetime(2023, 1, 4).isoformat(),  # technical field to make tests possible
     }
-    txn_resp = requests.post("http://localhost:8000/v1/transaction", json=txn)
+    txn_resp = requests.post(f"{SERVICE_URL}/v1/transaction", json=txn)
     assert txn_resp.status_code == 200
     assert_balance(user, "100.00")
 
-    detail_resp = requests.get(f'http://localhost:8000/v1/transaction/{txn["uid"]}')
+    detail_resp = requests.get(f'{SERVICE_URL}/v1/transaction/{txn["uid"]}')
     assert detail_resp.json()["type"] == "DEPOSIT"
     assert detail_resp.json()["amount"] == "100.00"
 
@@ -45,8 +55,8 @@ def test_api():
         "user_id": user["id"],
         "timestamp": datetime(2023, 1, 5).isoformat(),  # technical field to make tests possible
     }
-    txn_resp = requests.post("http://localhost:8000/v1/transaction", json=txn)
-    txn_resp = requests.post("http://localhost:8000/v1/transaction", json=txn)
+    txn_resp = requests.post(f"{SERVICE_URL}/v1/transaction", json=txn)
+    txn_resp = requests.post(f"{SERVICE_URL}/v1/transaction", json=txn)
     assert txn_resp.status_code == 200
     assert_balance(user, "50.00")
 
@@ -57,7 +67,7 @@ def test_api():
         "user_id": user["id"],
         "timestamp": datetime.utcnow().isoformat(),  # technical field to make tests possible
     }
-    txn_resp = requests.post("http://localhost:8000/v1/transaction", json=txn)
+    txn_resp = requests.post(f"{SERVICE_URL}/v1/transaction", json=txn)
     assert txn_resp.status_code == 402  # insufficient funds
     assert_balance(user, "50.00")
 
@@ -68,7 +78,7 @@ def test_api():
         "user_id": user["id"],
         "timestamp": datetime(2023, 2, 5).isoformat(),  # technical field to make tests possible
     }
-    txn_resp = requests.post("http://localhost:8000/v1/transaction", json=txn)
+    txn_resp = requests.post(f"{SERVICE_URL}/v1/transaction", json=txn)
     assert txn_resp.status_code == 200
     assert_balance(user, "40.00")
 

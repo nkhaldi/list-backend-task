@@ -22,5 +22,11 @@ RUN pip install -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . /app
 
-# Set the command to run the application
-CMD ["python", "-m", "app"]
+# Copy .env file into the container
+COPY .env /app/.env
+
+# Copy the init_db.py file into the container
+COPY ./init_db.py /app/init_db.py
+
+# Run migrations and then set the command to run the application
+CMD ["sh", "-c", "python /app/init_db.py && python -m app"]

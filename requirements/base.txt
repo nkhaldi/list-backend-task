@@ -1,5 +1,7 @@
 aiohttp
+asyncpg
 gino
 pytest
-asyncpg
+python-dotenv
+requests
 uvloop

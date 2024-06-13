@@ -5,10 +5,11 @@ services:
     build: .
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URI: postgres://postgres:postgres@db:5432/postgres
+    env_file:
+      - .env
     depends_on:
       - db
+    command: ["sh", "-c", "python init_db.py && python -m app"]
 
   db:
     image: postgres:13
@@ -18,3 +19,12 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
+
+  test:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - web
+    command: ["pytest", "tests"]

@@ -9,7 +9,6 @@ from app.app import init_app
 def create_app() -> web.Application:
     """Create app."""
     app = init_app()
-
     return app
 
 
